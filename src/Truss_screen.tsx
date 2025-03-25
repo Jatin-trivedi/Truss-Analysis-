@@ -25,6 +25,7 @@ import { Forces, Reaction, ReactionForce } from "./Calculation/ReactionForce";
 import MemberForce, { ComputedForces } from "./Calculation/MemberForce";
 import calculateMemberForces from "./Calculation/MemberForce";
 
+import { calculateForceTypes, MemberForceType } from "./Calculation/TypeForce";
 export const Truss_screen = () => {
   const [trussHeight, setTrussHeight] = React.useState(100);
   const [trussSpan, setTrussSpan] = React.useState(500);
@@ -42,6 +43,10 @@ export const Truss_screen = () => {
 
   const [memberForces, setMemberForces] = React.useState<Map<string, number>| null>(null);
 
+
+  const [forceTypes, setForceTypes] = React.useState<MemberForceType[]>([]);
+
+  
   // Handle numeric input changes safely with scaling
   const handleNumericChange =
     (setter: React.Dispatch<React.SetStateAction<number>>) =>
@@ -94,9 +99,9 @@ export const Truss_screen = () => {
       node: force.node,
       forceX: force.fx, // Use Pythagorean theorem for force magnitude
       forceY: force.fy,
-      type: (force.fx + force.fy > 0 ? "Tension" : "Compression") as
-        | "Tension"
-        | "Compression",
+      type: (force.fx + force.fy > 0 ? "Compression" : "Tension") as
+        | "Compression"
+        | "Tension",
     })
   ));
   for (let i = 0; i < 8 ; i++) {
@@ -118,7 +123,8 @@ export const Truss_screen = () => {
     
   )
   setMemberForces(MemberForces);
-  }
+  setForceTypes(calculateForceTypes(MemberForces));  
+}
   
 
   return (
@@ -308,40 +314,32 @@ export const Truss_screen = () => {
           Calculate Member Forces
         </Button>
         {memberForces && (
-         <TableContainer component={Paper}>
-         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-           <TableHead>
-             <TableRow>
-               <TableCell align="center">Member</TableCell>
-               <TableCell align="center">Force(magnitude)</TableCell>
-               <TableCell align="center">Force(nature)</TableCell>
-             </TableRow>
-           </TableHead>
-           <TableBody>
-             
-               <TableRow
-                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-               >
-                 <TableCell align="center">Member01</TableCell><TableCell align="center">{memberForces.get("F01")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member02</TableCell><TableCell align="center">{memberForces.get("F02")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member12</TableCell><TableCell align="center">{memberForces.get("F12")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member13</TableCell><TableCell align="center">{memberForces.get("F13")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member14</TableCell><TableCell align="center">{memberForces.get("F14")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member23</TableCell><TableCell align="center">{memberForces.get("F23")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member34</TableCell><TableCell align="center">{memberForces.get("F34")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member35</TableCell><TableCell align="center">{memberForces.get("F35")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member36</TableCell><TableCell align="center">{memberForces.get("F36")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member45</TableCell><TableCell align="center">{memberForces.get("F45")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member56</TableCell><TableCell align="center">{memberForces.get("F56")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member57</TableCell><TableCell align="center">{memberForces.get("F57")}</TableCell></TableRow>
-                 <TableRow><TableCell align="center">Member67</TableCell><TableCell align="center">{memberForces.get("F67")}</TableCell></TableRow>
-               
-               
-             
-           </TableBody>
-         </Table>
-       </TableContainer>
-        )}
+  <TableContainer component={Paper}>
+    <Table sx={{ minWidth: 650 }} aria-label="member forces table">
+      <TableHead>
+        <TableRow>
+          <TableCell align="center">Member</TableCell>
+          <TableCell align="center">Force (kN)</TableCell>
+          <TableCell align="center">Type</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {forceTypes.map((row) => (
+          <TableRow key={row.member}>
+            <TableCell align="center">{row.member}</TableCell>
+            <TableCell align="center">{row.force.toFixed(2)}</TableCell>
+            <TableCell align="center" style={{
+              color: row.type === "Compression" ? "blue" : "red",
+              fontWeight: "bold"
+            }}>
+              {row.type}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
+)}
       </Box>
     </Box>
   );

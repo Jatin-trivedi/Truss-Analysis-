@@ -23,7 +23,6 @@ interface Reaction {
 
 interface MemberForce {
   force: number;
-  type: "Tension" | "Compression";
 }
 export interface ComputedForces {
   node: number;
