@@ -28,7 +28,8 @@ truss-project/
 │   │-- TrussDiagramW.tsx     # Warren truss visualization
 │   │-- Calculation/
 │   │   │-- ReactionForce.tsx  # Reaction force calculations
-│   │   │-- MemberForce.tsx  # Member force calculations
+│   │   │-- MemberForce.tsx  # Member
+│   │   │-- ForceType.tsx  # Type 
 │   │-- components/
 │   │   │-- Header.tsx        # Header component
 │   │   │-- Footer.tsx        # Footer component
